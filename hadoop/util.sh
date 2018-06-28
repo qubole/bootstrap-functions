@@ -46,5 +46,3 @@ function use_java8() {
    restart_worker_services
  fi
 }
-
-use_java8
