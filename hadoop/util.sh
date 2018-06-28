@@ -5,12 +5,26 @@ export PROFILE_FILE=${PROFILE_FILE:-/etc/profile}
 export HADOOP_ETC_DIR=${HADOOP_ETC_DIR:-/usr/lib/hadoop2/etc/hadoop}
 
 function restart_master_services() {
-  monit restart resourcemanager
-  monit restart namenode
+  monit unmonitor namenode
+  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop namenode' hdfs
+  monit start namenode
+
+  monit unmonitor resourcemanager
+  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/yarn-daemon.sh stop resourcemanager' yarn
+  monit start resourcemanager
+  # Since resourcemanager depends on namenode, monit restart namenode will
+  # restart the RM as well
+  # monit restart resourcemanager
+
+  monit unmonitor historyserver
+  /bin/su -s /bin/bash -c 'HADOOP_LIBEXEC_DIR=/usr/lib/hadoop2/libexec /usr/lib/hadoop2/sbin/mr-jobhistory-daemon.sh stop historyserver' mapred
+  monit start historyserver
 }
 
 function restart_worker_services() {
-  monit restart datanode
+  monit unmonitor datanode
+  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop datanode' hdfs
+  monit start datanode
   # No need to restart nodemanager since it starts only
   # after thhe bootstrap is finished
 }
@@ -32,3 +46,5 @@ function use_java8() {
    restart_worker_services
  fi
 }
+
+use_java8
