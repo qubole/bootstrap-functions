@@ -43,8 +43,6 @@ function use_java8() {
  echo "export PATH=$JAVA_HOME/bin:$PATH" >> "$PROFILE_FILE"
  
  sed -i 's/java-1.7.0/java-1.8.0/' "$HADOOP_ETC_DIR/hadoop-env.sh"
- sed -i 's/java-1.7.0/java-1.8.0/' "$HADOOP_ETC_DIR/mapred-env.sh"
- sed -i 's/java-1.7.0/java-1.8.0/' "$HADOOP_ETC_DIR/yarn-env.sh"
 
  is_master=$(nodeinfo is_master)
  if [[ "$is_master" == "1" ]]; then
