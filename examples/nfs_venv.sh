@@ -14,8 +14,8 @@
 #
 
 source /usr/lib/hustler/bin/qubole-bash-lib.sh
-source /usr/lib/bootstrap-functions/misc/mount_nfs.sh
-source /usr/lib/bootstrap-functions/misc/python_venv.sh
+source /usr/lib/qubole/bootstrap-functions/misc/mount_nfs.sh
+source /usr/lib/qubole/bootstrap-functions/misc/python_venv.sh
 
 mount_nfs_volume "fs-7abdefa3.efs.us-east-1.amazonaws.com:/" /mnt/efs
 
