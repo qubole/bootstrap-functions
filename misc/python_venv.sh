@@ -1,5 +1,9 @@
 #!/bin/bash -x
 
+##
+# Install and activate a Python virtualenv
+# param1 - version of python to use, default 3.6
+# param2 - location to create virtualenv in, default /usr/lib/virtualenv/py36
 #
 # This function activates the new virtualenv, so install
 # any libraries you want after calling this with "pip install"
@@ -10,7 +14,6 @@
 #    /usr/lib/hadoop2/bin/hadoop dfs -get {s3|wasb}://path/to/requirements/file /tmp/requirements.txt
 #    pip install -r /tmp/requirements.txt
 #
-
 function install_python_venv() {
   version=${$1:-36}
   location=${$2:-/usr/lib/virtualenv/py36}

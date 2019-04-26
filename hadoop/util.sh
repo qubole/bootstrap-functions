@@ -4,6 +4,12 @@ source /usr/lib/hustler/bin/qubole-bash-lib.sh
 export PROFILE_FILE=${PROFILE_FILE:-/etc/profile}
 export HADOOP_ETC_DIR=${HADOOP_ETC_DIR:-/usr/lib/hadoop2/etc/hadoop}
 
+##
+# Restart hadoop services on the cluster master
+#
+# This may be used if you're using a different version
+# of Java, for example
+#
 function restart_master_services() {
 
   monit unmonitor namenode
@@ -27,6 +33,13 @@ function restart_master_services() {
   monit monitor timelineserver
 }
 
+
+##
+# Restart hadoop services on cluster workers
+#
+# This only restarts the datanode service since the
+# nodemanager is started after the bootstrap is run
+#
 function restart_worker_services() {
   monit unmonitor datanode
   /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop datanode' hdfs
@@ -36,6 +49,15 @@ function restart_worker_services() {
   # after thhe bootstrap is finished
 }
 
+##
+# Use Java 8 for hadoop daemons and jobs
+#
+# By default, the hadoop daemons and jobs on Qubole
+# clusters run on Java 7. Use this function if you would like
+# to use Java 8. This is only required if your cluster:
+# is in AWS, and
+# is running Hive or Spark < 2.2
+#
 function use_java8() {
  export JAVA_HOME=/usr/lib/jvm/java-1.8.0
  export PATH=$JAVA_HOME/bin:$PATH
