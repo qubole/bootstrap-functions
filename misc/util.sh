@@ -5,18 +5,27 @@
 
 ##
 # Set the timezone
-# param1 - Timezone to set. Defaults to "UTC"
+# param1 - Timezone to set. Mandatory parameter
 #          Eg: "US/Mountain", "America/Los_Angeles" etc.
 #
 # This function sets the timezone on the cluster node.
 # After setting the timezone, it is advised to restart engine daemons on the master and worker nodes
 #
 function set_timezone() {
-    timezone=${1:-UTC}
+    timezone=$1
 
-    mv /etc/localtime /etc/localtime.old
-    ln -sf /usr/share/timezone/${} /etc/localtime
-    echo "Updated timezone to ${timezone}."
+    if [[ $# -eq 0 ]]; then
+        echo "Usage: set_timezone <new_timezone>"
+    else
+        timezone_path="/usr/share/zoneinfo/${timezone}"
+        if [[ -f ${timezone_path} ]]; then
+            mv -f /etc/localtime /etc/localtime.old
+            ln -sf ${timezone_path} /etc/localtime
+            echo "Updated timezone to ${timezone}."
+        else
+            echo "Invalid timezone ${timezone} provided."
+        fi
+    fi
 }
 
 ##
