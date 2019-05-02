@@ -11,17 +11,14 @@ source /usr/lib/qubole/bootstrap-functions/hive/hiveserver2.sh
 # -h: Ranger admin host. Defaults to `localhost`
 # -p: Ranger admin port. Defaults to `6080`
 # -r: Ranger repository name. Defaults to `hivedev`
-# -s: Path to SQL connector jar. Defaults to jar for MySQL 5.1.34
-#     `/usr/lib/hive1.2/lib/mysql-connector-java-5.1.34.jar`
 #
 function install_ranger() {
     HOST=localhost
     PORT=6080
     REPOSITORY_NAME=hivedev
-    SQL_CONNECTOR_JAR=/usr/lib/hive1.2/lib/mysql-connector-java-5.1.34.jar
     QBOL_HEALTH_CHECK_USER=qbol_user
 
-    while getopts ":h:p:r:s:q:" opt; do
+    while getopts ":h:p:r:q:" opt; do
         case ${opt} in
             h)
                 HOST=${OPTARG}
@@ -31,9 +28,6 @@ function install_ranger() {
                 ;;
             r)
                 REPOSITORY_NAME=${OPTARG}
-                ;;
-            s)
-                SQL_CONNECTOR_JAR=${OPTARG}
                 ;;
             \?)
                 echo "Invalid option: -${OPTARG}" >&2
@@ -63,12 +57,6 @@ function install_ranger() {
     # Configure install.properties
     sed -i "s#^\(REPOSITORY_NAME=\).*#REPOSITORY_NAME=${REPOSITORY_NAME}#g" install.properties
     sed -i "s#^\(POLICY_MGR_URL=\).*#POLICY_MGR_URL=${URL}#g" install.properties
-    grep -qs "^SQL_CONNECTOR_JAR" install.properties
-    if [[ $? -eq 0 ]]; then
-        sed -i "s#^\(SQL_CONNECTOR_JAR=\).*#SQL_CONNECTOR_JAR=${SQL_CONNECTOR_JAR}#g" install.properties
-    else
-        echo -e "\nSQL_CONNECTOR_JAR=${SQL_CONNECTOR_JAR}" >> install.properties
-    fi
     sed -i "s#^\(COMPONENT_INSTALL_DIR_NAME=\).*#COMPONENT_INSTALL_DIR_NAME=${HIVE_LIB}#g" install.properties
 
     # Configure and run enable-hive-plugin.sh
