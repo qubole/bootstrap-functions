@@ -9,6 +9,8 @@ function start_history_server() {
    is_master=$(nodeinfo is_master)
     if [[ "$is_master" == "1" ]]; then
         monit start sparkhistoryserver
+    else
+        return 1
     fi
 }
 
@@ -19,6 +21,8 @@ function stop_history_server() {
    is_master=$(nodeinfo is_master)
     if [[ "$is_master" == "1" ]]; then
         monit stop sparkhistoryserver
+    else
+        return 1
     fi
 }
 
