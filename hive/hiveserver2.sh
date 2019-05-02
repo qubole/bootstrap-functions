@@ -13,14 +13,14 @@ is_hs2_configured() {
 # Stop HiveServer2 JVM - works on both Hadoop2 and HiveServer2 cluster
 stop_hs2() {
   if [[ is_hs2_configured ]]; then
-    sudo monit stop hs2
+    monit stop hs2
   fi
 }
 
 # Start HiveServer2 JVM - works on both Hadoop2 and HiveServer2 cluster
 start_hs2() {
   if [[ is_hs2_configured ]]; then
-    sudo monit start hs2
+    monit start hs2
   fi
 }
 
