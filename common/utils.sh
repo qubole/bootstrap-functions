@@ -19,7 +19,7 @@ is_hadoop2_cluster() {
 # Returns 0 when HiveServer2 is configured to run on the cluster master.
 # Returns 1 otherwise
 is_hs2_enabled() {
-  is_hadoop2_cluster && [[ `nodeinfo use_hs2` = "1" ]]
+  is_hadoop2_cluster && [[ `nodeinfo hive_use_hs2` = "1" ]]
 }
 
 # Returns 0 when run on a HiveServer2 cluster node.
