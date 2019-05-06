@@ -44,7 +44,7 @@ function stop_daemon() {
 
 function restart_services() {
   svcs=("$@")
-  running_svcs=($(find_running_services "${svcs[@]}"))
+  running_svcs=($(get_running_services "${svcs[@]}"))
   for s in "${running_svcs[@]}"; do
     monit unmonitor "$s"
   done
@@ -55,10 +55,13 @@ function restart_services() {
 
   last=${#running_svcs[@]}
 
+  # Restart services in reverse order of how
+  # they were stopped
   for (( i=0; i <last; i++ )); do
     start_daemon "${running_svcs[~i]}"
   done
 
+  # Order doesn't matter for (un)monitor
   for s in "${running_svcs[@]}"; do
     monit monitor "$s"
   done
