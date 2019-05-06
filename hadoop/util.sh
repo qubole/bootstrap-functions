@@ -1,8 +1,68 @@
 #!/bin/bash
 
 source /usr/lib/hustler/bin/qubole-bash-lib.sh
+source /usr/lib/qubole/bootstrap-functions/common/utils.sh
 export PROFILE_FILE=${PROFILE_FILE:-/etc/profile}
 export HADOOP_ETC_DIR=${HADOOP_ETC_DIR:-/usr/lib/hadoop2/etc/hadoop}
+declare -A SVC_USERS=([namenode]=hdfs [timelineserver]=yarn [historyserver]=mapred [resourcemanager]=yarn [datanode]=hdfs)
+
+function start_daemon() {
+  daemon=shift;
+  case "SVC_USERS[$daemon]" in
+    yarn)
+      /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/yarn-daemon.sh start $daemon" yarn
+      ;;
+    hdfs)
+      /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/hadoop-daemon.sh start $daemon" hdfs
+      ;;
+    mapred)
+      /bin/su -s /bin/bash -c "HADOOP_LIBEXEC_DIR=/usr/lib/hadoop2/libexec /usr/lib/hadoop2/sbin/mr-jobhistory-daemon.sh start $daemon" mapred
+      ;;
+    *)
+      echo "Invalid daemon $daemon"
+      ;;
+  esac
+}
+
+function stop_daemon() {
+  daemon=shift;
+  case "${SVC_USERS[$daemon]}" in
+    yarn)
+      /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/yarn-daemon.sh stop $daemon" yarn
+      ;;
+    hdfs)
+      /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop $daemon" hdfs
+      ;;
+    mapred)
+      /bin/su -s /bin/bash -c "HADOOP_LIBEXEC_DIR=/usr/lib/hadoop2/libexec /usr/lib/hadoop2/sbin/mr-jobhistory-daemon.sh stop $daemon" mapred
+      ;;
+    *)
+      echo "Invalid daemon $daemon"
+      ;;
+  esac
+}
+
+function restart_services() {
+  svcs="$@"
+  running_svcs=find_running_services "${svcs[@]}"
+  for s in "${running_svcs[@]}"; do
+    monit unmonitor "$s"
+  done
+
+  for s in "${running_svcs[@]}"; do
+    stop_daemon "$s"
+  done
+
+  last=${#running_svcs[@]}
+
+  for (( i=0; i <last; i++ )); do
+    start_daemon "${running_svcs[~i]}"
+  done
+
+  for s in "${running_svcs[@]}"; do
+    monit monitor "$s"
+  done
+}
 
 ##
 # Restart hadoop services on the cluster master
@@ -11,26 +71,7 @@ export HADOOP_ETC_DIR=${HADOOP_ETC_DIR:-/usr/lib/hadoop2/etc/hadoop}
 # of Java, for example
 #
 function restart_master_services() {
-
-  monit unmonitor namenode
-  monit unmonitor timelineserver
-  monit unmonitor historyserver
-  monit unmonitor resourcemanager
-
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/yarn-daemon.sh stop timelineserver' yarn
-  /bin/su -s /bin/bash -c 'HADOOP_LIBEXEC_DIR=/usr/lib/hadoop2/libexec /usr/lib/hadoop2/sbin/mr-jobhistory-daemon.sh stop historyserver' mapred
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/yarn-daemon.sh stop resourcemanager' yarn
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop namenode' hdfs
-
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh start namenode' hdfs
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/yarn-daemon.sh start resourcemanager' yarn
-  /bin/su -s /bin/bash -c 'HADOOP_LIBEXEC_DIR=/usr/lib/hadoop2/libexec /usr/lib/hadoop2/sbin/mr-jobhistory-daemon.sh start historyserver' mapred
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/yarn-daemon.sh start timelineserver' yarn
-
-  monit monitor namenode
-  monit monitor resourcemanager
-  monit monitor historyserver
-  monit monitor timelineserver
+  restart_services timelineserver historyserver resourcemanager namenode
 }
 
 
@@ -41,10 +82,7 @@ function restart_master_services() {
 # nodemanager is started after the bootstrap is run
 #
 function restart_worker_services() {
-  monit unmonitor datanode
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop datanode' hdfs
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh start datanode' hdfs
-  monit monitor datanode
+  restart_services datanode
   # No need to restart nodemanager since it starts only
   # after thhe bootstrap is finished
 }
