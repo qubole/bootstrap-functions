@@ -7,8 +7,8 @@ export HADOOP_ETC_DIR=${HADOOP_ETC_DIR:-/usr/lib/hadoop2/etc/hadoop}
 declare -A SVC_USERS=([namenode]=hdfs [timelineserver]=yarn [historyserver]=mapred [resourcemanager]=yarn [datanode]=hdfs)
 
 function start_daemon() {
-  daemon=shift;
-  case "SVC_USERS[$daemon]" in
+  daemon=$1;
+  case "${SVC_USERS[$daemon]}" in
     yarn)
       /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/yarn-daemon.sh start $daemon" yarn
       ;;
@@ -25,7 +25,7 @@ function start_daemon() {
 }
 
 function stop_daemon() {
-  daemon=shift;
+  daemon=$1;
   case "${SVC_USERS[$daemon]}" in
     yarn)
       /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/yarn-daemon.sh stop $daemon" yarn
@@ -43,8 +43,8 @@ function stop_daemon() {
 }
 
 function restart_services() {
-  svcs="$@"
-  running_svcs=find_running_services "${svcs[@]}"
+  svcs=("$@")
+  running_svcs=($(find_running_services "${svcs[@]}"))
   for s in "${running_svcs[@]}"; do
     monit unmonitor "$s"
   done
