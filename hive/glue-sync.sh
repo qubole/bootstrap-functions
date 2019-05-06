@@ -21,9 +21,18 @@ function install_glue_sync() {
 
         # Add glue sync configurations to hive-site.xml
         # (Refer : https://github.com/awslabs/aws-glue-catalog-sync-agent-for-hive)
-        sed -i "s|</property></configuration>|</property><property><name>hive.metastore.event.listeners</name><value>com.amazonaws.services.glue.catalog.HiveGlueCatalogSyncAgent</value></property></configuration>|g" /usr/lib/hive1.2/conf/hive-site.xml
-        sed -i "s|</property></configuration>|</property><property><name>glue.catalog.athena.jdbc.url</name><value>jdbc:awsathena://athena.${aws_region}.amazonaws.com:443</value></property></configuration>|g" /usr/lib/hive1.2/conf/hive-site.xml
-        sed -i "s|</property></configuration>|</property><property><name>glue.catalog.athena.s3.staging.dir</name><value>${glue_staging_dir}</value></property></configuration>|g" /usr/lib/hive1.2/conf/hive-site.xml
+        cp /usr/lib/hive1.2/conf/hive-site.xml /usr/lib/hive1.2/conf/hive-site.xml.bak
+        xmlstarlet ed --inplace --omit-decl -s '//configuration' -t elem -n "property" -v "" \
+            -s '//configuration/property[last()]' -t elem -n "name" -v "hive.metastore.event.listeners" \
+            -s '//configuration/property[last()]' -t elem -n "value" -v "com.amazonaws.services.glue.catalog.HiveGlueCatalogSyncAgent" /usr/lib/hive1.2/conf/hive-site.xml
+
+        xmlstarlet ed --inplace --omit-decl -s '//configuration' -t elem -n "property" -v "" \
+            -s '//configuration/property[last()]' -t elem -n "name" -v "glue.catalog.athena.jdbc.url" \
+            -s '//configuration/property[last()]' -t elem -n "value" -v "jdbc:awsathena://athena.${aws_region}.amazonaws.com:443" /usr/lib/hive1.2/conf/hive-site.xml
+
+        xmlstarlet ed --inplace --omit-decl -s '//configuration' -t elem -n "property" -v "" \
+            -s '//configuration/property[last()]' -t elem -n "name" -v "glue.catalog.athena.s3.staging.dir" \
+            -s '//configuration/property[last()]' -t elem -n "value" -v "${glue_staging_dir}" /usr/lib/hive1.2/conf/hive-site.xml
 
         # Restart metastore
         monit unmonitor metastore1_2
