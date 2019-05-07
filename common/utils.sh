@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function get_running_services() {
-  running_svcs=()  
+  local running_svcs=()  
   for s in "$@"; do
     monitored=$(wget -q -O - localhost:2812/_status?format=xml | xmlstarlet sel -t -v "/monit/service[name='${s}']/monitor")
     if [[ "$monitored" == "1" ]]; then
