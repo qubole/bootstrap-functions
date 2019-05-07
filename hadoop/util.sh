@@ -6,8 +6,8 @@ export PROFILE_FILE=${PROFILE_FILE:-/etc/profile}
 export HADOOP_ETC_DIR=${HADOOP_ETC_DIR:-/usr/lib/hadoop2/etc/hadoop}
 declare -A SVC_USERS=([namenode]=hdfs [timelineserver]=yarn [historyserver]=mapred [resourcemanager]=yarn [datanode]=hdfs)
 
-function start_daemon() {
-  daemon=$1;
+function _start_daemon() {
+  local daemon=$1;
   case "${SVC_USERS[$daemon]}" in
     yarn)
       /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/yarn-daemon.sh start $daemon" yarn
@@ -24,8 +24,8 @@ function start_daemon() {
   esac
 }
 
-function stop_daemon() {
-  daemon=$1;
+function _stop_daemon() {
+  local daemon=$1;
   case "${SVC_USERS[$daemon]}" in
     yarn)
       /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/yarn-daemon.sh stop $daemon" yarn
@@ -42,23 +42,23 @@ function stop_daemon() {
   esac
 }
 
-function restart_services() {
-  svcs=("$@")
-  running_svcs=($(get_running_services "${svcs[@]}"))
+function _restart_services() {
+  local svcs=("$@")
+  local running_svcs=($(get_running_services "${svcs[@]}"))
   for s in "${running_svcs[@]}"; do
     monit unmonitor "$s"
   done
 
   for s in "${running_svcs[@]}"; do
-    stop_daemon "$s"
+    _stop_daemon "$s"
   done
 
-  last=${#running_svcs[@]}
+  local last=${#running_svcs[@]}
 
   # Restart services in reverse order of how
   # they were stopped
-  for (( i=0; i <last; i++ )); do
-    start_daemon "${running_svcs[~i]}"
+  for (( i=last-1; i>=0; i-- )); do
+    _start_daemon "${running_svcs[i]}"
   done
 
   # Order doesn't matter for (un)monitor
@@ -67,27 +67,38 @@ function restart_services() {
   done
 }
 
-##
+#
 # Restart hadoop services on the cluster master
 #
-# This may be used if you're using a different version
-# of Java, for example
-#
-function restart_master_services() {
-  restart_services timelineserver historyserver resourcemanager namenode
+function _restart_master_services() {
+  _restart_services timelineserver historyserver resourcemanager namenode
 }
 
-
-##
+#
 # Restart hadoop services on cluster workers
 #
 # This only restarts the datanode service since the
 # nodemanager is started after the bootstrap is run
 #
-function restart_worker_services() {
-  restart_services datanode
+function _restart_worker_services() {
+  _restart_services datanode
   # No need to restart nodemanager since it starts only
   # after thhe bootstrap is finished
+}
+
+##
+# Restart hadoop services
+#
+# This may be used if you're using a different version
+# of Java, for example
+#
+function restart_hadoop_services() {
+  local is_master=$(nodeinfo is_master)
+  if [[ "$is_master" == "1" ]]; then
+    _restart_master_services
+  else
+    _restart_worker_services
+  fi
 }
 
 ##
@@ -106,11 +117,5 @@ function use_java8() {
  echo "export PATH=$JAVA_HOME/bin:$PATH" >> "$PROFILE_FILE"
  
  sed -i 's/java-1.7.0/java-1.8.0/' "$HADOOP_ETC_DIR/hadoop-env.sh"
-
- is_master=$(nodeinfo is_master)
- if [[ "$is_master" == "1" ]]; then
-   restart_master_services
- else
-   restart_worker_services
- fi
+ restart_hadoop_services
 }
