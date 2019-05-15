@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source /usr/lib/hustler/bin/qubole-bash-lib.sh
-source /usr/lib/qubole/bootstrap-functions/hive/thrift-metastore.sh
 
 ##
 # Installs Hive Glue Catalog Sync Agent
@@ -37,7 +36,7 @@ function install_glue_sync() {
         # Restart metastore
         monit unmonitor metastore1_2
         export OVERRIDE_HADOOP_JAVA_HOME=/usr/lib/jvm/java-1.8.0_60
-        restart_thrift_metastore
+        /usr/lib/hive1.2/bin/thrift-metastore server stop && sleep 5 && /usr/lib/hive1.2/bin/thrift-metastore server start
         monit monitor metastore1_2
 
         rm /tmp/jdbc.log
