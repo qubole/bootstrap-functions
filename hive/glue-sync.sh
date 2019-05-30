@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source /usr/lib/hustler/bin/qubole-bash-lib.sh
+source /usr/lib/qubole/bootstrap-functions/common/utils.sh
 
 ##
 # Installs Hive Glue Catalog Sync Agent
@@ -39,6 +40,9 @@ function install_glue_sync() {
         /usr/lib/hive1.2/bin/thrift-metastore server stop && sleep 5 && /usr/lib/hive1.2/bin/thrift-metastore server start
         monit monitor metastore1_2
 
+        if [[ is_hs2_configured ]]; then
+            /usr/lib/hive1.2/bin/hiveserver2-admin stop && sleep 5 && /usr/lib/hive1.2/usr-bin/startHS2.sh
+        fi
         rm /tmp/jdbc.log
     fi
 }
