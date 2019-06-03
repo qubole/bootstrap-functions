@@ -36,7 +36,7 @@ function install_glue_sync() {
 
         # Restart metastore
         monit unmonitor metastore1_2
-        export OVERRIDE_HADOOP_JAVA_HOME=/usr/lib/jvm/java-1.8.0_60
+        export OVERRIDE_HADOOP_JAVA_HOME=/usr/lib/jvm/java-1.8.0
         /usr/lib/hive1.2/bin/thrift-metastore server stop && sleep 5 && /usr/lib/hive1.2/bin/thrift-metastore server start
         monit monitor metastore1_2
 
