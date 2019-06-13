@@ -41,9 +41,9 @@ function install_glue_sync() {
         monit monitor metastore1_2
 
         if [[ is_hs2_configured ]]; then
-            /usr/lib/hive1.2/bin/hiveserver2-admin stop && sleep 5 && /usr/lib/hive1.2/usr-bin/startHS2.sh
+            /usr/lib/hive1.2/bin/hiveserver2-admin stop && sleep 5 && /bin/bash /usr/lib/hive1.2/usr-bin/startHS2.sh
         fi
-        rm /tmp/jdbc.log
+        rm -f /tmp/jdbc.log
     fi
 }
 
