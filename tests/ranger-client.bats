@@ -12,6 +12,7 @@ function setup() {
         source /usr/lib/qubole/bootstrap-functions/hive/ranger-client.sh
         install_ranger -h ${RANGER_HOST} -p ${RANGER_PORT} -r ${RANGER_REPO}
         touch /tmp/RANGER_INSTALLED
+    fi
 }
 
 @test "Ranger directory exists" {
