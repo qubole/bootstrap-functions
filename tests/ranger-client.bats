@@ -1,8 +1,11 @@
 load helpers/file_helper
 
-RANGER_HOST=test-host
-RANGER_PORT=6081
-RANGER_REPO=testdev
+# RANGER_HOST=test-host
+# RANGER_PORT=6081
+# RANGER_REPO=testdev
+RANGER_HOST=localhost
+RANGER_PORT=6080
+RANGER_REPO=hivedev
 RANGER_URL=http://${RANGER_HOST}:${RANGER_PORT}
 HIVE_LIB=/usr/lib/hive1.2
 RANGER_HIVE_PLUGIN_PATH=/media/ephemeral0/hive_plugin/ranger-1.1.0-hive-plugin
