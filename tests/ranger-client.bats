@@ -1,8 +1,5 @@
 load helpers/file_helper
 
-# RANGER_HOST=test-host
-# RANGER_PORT=6081
-# RANGER_REPO=testdev
 RANGER_HOST=localhost
 RANGER_PORT=6080
 RANGER_REPO=hivedev
