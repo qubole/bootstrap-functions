@@ -17,7 +17,7 @@ function install_glue_sync() {
         glue_staging_dir=$(nodeinfo s3_default_location)
         glue_staging_dir="${glue_staging_dir}/query_result"
 
-        hadoop dfs -get s3://paid-qubole/aws_glue_sync/HiveGlueCatalogSyncAgent-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/lib/hive1.2/lib/
+        /usr/lib/hadoop2/bin/hadoop dfs -get s3://paid-qubole/aws_glue_sync/HiveGlueCatalogSyncAgent-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/lib/hive1.2/lib/
 
         # Add glue sync configurations to hive-site.xml
         # (Refer : https://github.com/awslabs/aws-glue-catalog-sync-agent-for-hive)
