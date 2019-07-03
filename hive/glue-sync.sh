@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source /usr/lib/hustler/bin/qubole-bash-lib.sh
-source /usr/lib/qubole/bootstrap-functions/common/utils.sh
+source /usr/lib/qubole/bootstrap-functions/hive/hiveserver2.sh
 
 ##
 # Installs Hive Glue Catalog Sync Agent
@@ -17,7 +17,7 @@ function install_glue_sync() {
         glue_staging_dir=$(nodeinfo s3_default_location)
         glue_staging_dir="${glue_staging_dir}/query_result"
 
-        hadoop dfs -get s3://paid-qubole/aws_glue_sync/HiveGlueCatalogSyncAgent-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/lib/hive1.2/lib/
+        /usr/lib/hadoop2/bin/hadoop dfs -get s3://paid-qubole/aws_glue_sync/HiveGlueCatalogSyncAgent-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/lib/hive1.2/lib/
 
         # Add glue sync configurations to hive-site.xml
         # (Refer : https://github.com/awslabs/aws-glue-catalog-sync-agent-for-hive)
@@ -40,7 +40,7 @@ function install_glue_sync() {
         /usr/lib/hive1.2/bin/thrift-metastore server stop && sleep 5 && /usr/lib/hive1.2/bin/thrift-metastore server start
         monit monitor metastore1_2
 
-        if [[ is_hs2_configured ]]; then
+        if is_hs2_configured; then
             /usr/lib/hive1.2/bin/hiveserver2-admin stop && sleep 5 && /bin/bash /usr/lib/hive1.2/usr-bin/startHS2.sh
         fi
         rm -f /tmp/jdbc.log
