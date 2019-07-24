@@ -73,3 +73,36 @@ function use_java8() {
    restart_worker_services
  fi
 }
+
+# Wait until namenode is out of safe mode. Takes 2 params
+# first : Number of attempts function will make to get namenode out of safemode
+# second : Number of seconds each attempt will sleep for waiting for namenode to come out of sleep mode
+function wait_until_namenode_out_of_safe() {
+    n=0
+    num_attempts=$1
+    sleep_sec=$2
+    nn_out_of_safe_mode=0
+    until [ $n -ge $attempts ]
+    do
+        n=$[$n+1]
+        safe_mode_stat=`sudo -u hdfs hadoop dfsadmin -safemode get|awk '{print $4}'`
+        if [[ $safe_mode_stat = "ON" ]]; then
+            sudo -u hdfs hadoop dfsadmin -safemode leave
+            echo "Attempt $n/$attempts"
+            sleep $sleep_sec
+        else
+            echo "NN is out of safemode..."
+            nn_out_of_safe_mode=1
+            break
+        fi
+    done
+    if [[ $nn_out_of_safe_mode -eq 0 ]]; then
+        safe_mode_stat=`sudo -u hdfs hadoop dfsadmin -safemode get|awk '{print $4}'`
+        if [[ $safe_mode_stat = "ON" ]]; then
+                echo "Node still in safe mode after all attempts exhausted!"
+        else
+            echo "NN is out of safemode..."
+        fi
+    fi
+    
+}
