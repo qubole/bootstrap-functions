@@ -3,13 +3,14 @@
 ##
 # Configure AWS CLI
 # -p: Name of the profile. Defaults to `default`
-# -r: AWS region
+# -r: AWS region. Defaults to `us-east-1`
 # -c: Credentials file
 # The credentials file must contain the AWS Access Key and
 # the AWS Secret Key separated by a space, comma, tab or newline
 #
 function configure_awscli() {
     PROFILE=default
+    REGION=us-east-1
 
     while getopts ":p:r:c:" opt; do
         case ${opt} in
@@ -37,9 +38,9 @@ function configure_awscli() {
         echo "AWS CLI was not found.."
         return 1
     fi
-    if [[ ! -z ${REGION} ]]; then
-        aws configure set region ${REGION} --profile ${PROFILE}
-    fi
+
+    aws configure set region ${REGION} --profile ${PROFILE}
+
     if [[ ! -z ${CREDENTIALS_FILE} ]]; then
         if [[ -f ${CREDENTIALS_FILE} && -r ${CREDENTIALS_FILE} ]]; then
             OLDIFS="$IFS"
