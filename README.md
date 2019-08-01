@@ -14,18 +14,19 @@ mount_nfs fs-7abd2444.efs.us-east-1.amazonaws.com:/ /mnt/efs
 ## Available functions
 The following functions are available at present
 * [restart_hs2](hive/hiveserver2.sh#L30) - Restart HiveServer2 JVM - works on both Hadoop2 and HiveServer2 cluster
-* [install_glue_sync](hive/glue-sync.sh#L11) - Installs Hive Glue Catalog Sync Agent
-* [mount_nfs_volume](misc/mount_nfs.sh#L21) - Mounts an NFS volume on master and worker nodes
-* [install_python_venv](misc/python_venv.sh#L17) - Install and activate a Python virtualenv
-* [set_timezone](misc/util.sh#L14) - Set the timezone
-* [add_to_authorized_keys](misc/util.sh#L38) - Add public key to authorized_keys
+* [configure_awscli](misc/awscli.sh#L11) - Configure AWS CLI
 * [restart_master_services](hadoop/util.sh#L13) - Restart hadoop services on the cluster master
 * [restart_worker_services](hadoop/util.sh#L43) - Restart hadoop services on cluster workers
 * [use_java8](hadoop/util.sh#L61) - Use Java 8 for hadoop daemons and jobs
+* [mount_nfs_volume](misc/mount_nfs.sh#L21) - Mounts an NFS volume on master and worker nodes
+* [set_timezone](misc/util.sh#L14) - Set the timezone
+* [add_to_authorized_keys](misc/util.sh#L38) - Add public key to authorized_keys
+* [install_glue_sync](hive/glue-sync.sh#L11) - Installs Hive Glue Catalog Sync Agent
 * [install_ranger](hive/ranger-client.sh#L13) - Install Apache Ranger client for Hive
 * [start_history_server](spark/util.sh#L8) - Start Spark History Server
 * [stop_history_server](spark/util.sh#L20) - Stop Spark History Server
 * [restart_history_server](spark/util.sh#L32) - Restart Spark History Server
+* [install_python_venv](misc/python_venv.sh#L17) - Install and activate a Python virtualenv
 
 ## Contributing
 Please raise a pull request for any modifications or additions you would like to make. There may be a delay between when you want to start using a method and when it might be available via Qubole's AMI. To work around this, it is recommended to put a placeholder `source` line in your bootstrap script. For example
