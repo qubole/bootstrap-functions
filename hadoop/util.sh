@@ -73,3 +73,18 @@ function use_java8() {
    restart_worker_services
  fi
 }
+
+# Mount given lustre fsx DNS as Shuffle Directory
+# Mandatory functional param -> Lustre Dns Name
+function mount_lustre_as_shuffle_dir() {
+  lustre_dns=$1
+  if [ -z "$lustre_dns" ]; then
+   echo "Specifying Lustre DNS is must!"
+   return 1
+  else
+   mkdir -p /lustre/qubole
+   mount -t lustre ${lustre_dns}@tcp:/fsx /lustre/qubole
+   chmod 777 /lustre
+   chmod 777 /lustre/qubole
+  fi
+}
