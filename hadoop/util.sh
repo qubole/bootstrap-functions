@@ -82,9 +82,24 @@ function mount_lustre_as_shuffle_dir() {
    echo "Specifying Lustre DNS is must!"
    return 1
   else
-   mkdir -p /lustre/qubole
-   mount -t lustre ${lustre_dns}@tcp:/fsx /lustre/qubole
-   chmod 777 /lustre
-   chmod 777 /lustre/qubole
+   cluster_id=`nodeinfo cluster_id`
+   cluster_inst_id=`nodeinfo cluster_inst_id`
+   instance_folder_identifier="$cluster_id-$cluster_inst_id"
+   mkdir -p /lustre/
+   mount -t lustre ${lustre_dns}@tcp:/fsx /lustre
+   mkdir -p /lustre/qubole/${instance_folder_identifier}
+   chmod 777 /lustre/qubole/${instance_folder_identifier}
+   chmod 777 /lustre/qubole/
+   chmod 777 /lustre/
+   xmlstarlet ed --inplace --update "/configuration/property[name='yarn.nodemanager.shuffle-dirs']/value" --value /lustre/qubole/${instance_folder_identifier} /usr/lib/hadoop2/etc/hadoop/yarn-site.xml
+   delete_previous_shuffle_dirs $cluster_id $instance_folder_identifier &
   fi
+}
+
+# Delete data of shuffle dirs that were created previously for cluster id's prev instances
+# First param -> Cluster id for which shuffle -dir is to be deleted
+# Second Param -> For that is to be avoided for deletion
+function delete_previous_shuffle_dirs() {
+  cd /lustre/qubole
+  ls | grep $1- | grep -v $2 | xargs rm -rf
 }
