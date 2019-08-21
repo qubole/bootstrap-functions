@@ -74,10 +74,12 @@ function use_java8() {
  fi
 }
 
-# Wait until namenode is out of safe mode. Takes 2 optional params
+##
+# Wait until namenode is out of safe mode.
+# Takes 2 optional params
 # first : Number of attempts function will make to get namenode out of safemode. Default is 50
 # second : Number of seconds each attempt will sleep for waiting for namenode to come out of sleep mode. Default is 5sec
-function wait_until_namenode_out_of_safe() {
+function wait_until_namenode_running() {
     n=0
     attempts=${1:-50}
     sleep_sec=${2:-5}
