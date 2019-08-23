@@ -82,6 +82,7 @@ function mount_lustre_as_shuffle_dir() {
    echo "Specifying Lustre DNS is must!"
    return 1
   else
+   sudo yum -y install xmlstarlet 
    cluster_id=`nodeinfo cluster_id`
    cluster_inst_id=`nodeinfo cluster_inst_id`
    instance_folder_identifier="$cluster_id-$cluster_inst_id"
