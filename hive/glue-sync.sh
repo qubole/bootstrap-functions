@@ -17,7 +17,7 @@ function install_glue_sync() {
         glue_staging_dir=$(nodeinfo s3_default_location)
         glue_staging_dir="${glue_staging_dir}/query_result"
 
-        /usr/lib/hadoop2/bin/hadoop dfs -get s3://paid-qubole/aws_glue_sync/HiveGlueCatalogSyncAgent-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/lib/hive1.2/lib/
+        /usr/lib/hadoop2/bin/hadoop dfs -get s3://paid-qubole/aws_glue_sync/HiveGlueCatalogSyncAgent-1.1-SNAPSHOT.jar /usr/lib/hive1.2/lib/
 
         # Add glue sync configurations to hive-site.xml
         # (Refer : https://github.com/awslabs/aws-glue-catalog-sync-agent-for-hive)
@@ -39,13 +39,12 @@ function install_glue_sync() {
         export OVERRIDE_HADOOP_JAVA_HOME=/usr/lib/jvm/java-1.8.0
         /usr/lib/hive1.2/bin/thrift-metastore server stop && sleep 5 && /usr/lib/hive1.2/bin/thrift-metastore server start
         monit monitor metastore1_2
+        sleep 10
+        chmod 777 /media/ephemeral0/logs/others/hive_glue_jdbc.log
        
         if is_hs2_configured; then
-            sleep 30
-            rm -f /tmp/jdbc.log
             /usr/lib/hive1.2/bin/hiveserver2-admin stop && sleep 5 && /bin/bash /usr/lib/hive1.2/usr-bin/startHS2.sh
         fi
-        rm -f /tmp/jdbc.log
     fi
 }
 
