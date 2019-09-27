@@ -35,12 +35,12 @@ function install_glue_sync() {
             -s '//configuration/property[last()]' -t elem -n "value" -v "${glue_staging_dir}" /usr/lib/hive1.2/conf/hive-site.xml
 
         # Restart metastore
+        touch /media/ephemeral0/logs/others/hive_glue_jdbc.log
+        chmod 777 /media/ephemeral0/logs/others/hive_glue_jdbc.log
         monit unmonitor metastore1_2
         export OVERRIDE_HADOOP_JAVA_HOME=/usr/lib/jvm/java-1.8.0
         /usr/lib/hive1.2/bin/thrift-metastore server stop && sleep 5 && /usr/lib/hive1.2/bin/thrift-metastore server start
         monit monitor metastore1_2
-        sleep 10
-        chmod 777 /media/ephemeral0/logs/others/hive_glue_jdbc.log
        
         if is_hs2_configured; then
             /usr/lib/hive1.2/bin/hiveserver2-admin stop && sleep 5 && /bin/bash /usr/lib/hive1.2/usr-bin/startHS2.sh
