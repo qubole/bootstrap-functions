@@ -41,7 +41,7 @@ function install_glue_sync() {
         export OVERRIDE_HADOOP_JAVA_HOME=/usr/lib/jvm/java-1.8.0
         /usr/lib/hive1.2/bin/thrift-metastore server stop && sleep 5 && /usr/lib/hive1.2/bin/thrift-metastore server start
         monit monitor metastore1_2
-       
+
         if is_hs2_configured; then
             /usr/lib/hive1.2/bin/hiveserver2-admin stop && sleep 5 && /bin/bash /usr/lib/hive1.2/usr-bin/startHS2.sh
         fi
