@@ -1,6 +1,6 @@
 load helpers/file_helper
 
-JAR_FILE_PATH=/usr/lib/hive1.2/lib/HiveGlueCatalogSyncAgent-1.0-SNAPSHOT-jar-with-dependencies.jar
+JAR_FILE_PATH=/usr/lib/hive1.2/lib/HiveGlueCatalogSyncAgent-1.1-SNAPSHOT.jar
 HIVE_SITE_PATH=/usr/lib/hive1.2/conf/hive-site.xml
 HIVE_SITE_BAK_PATH=/usr/lib/hive1.2/conf/hive-site.xml.bak
 REGION=test-region
