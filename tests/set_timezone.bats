@@ -3,7 +3,8 @@ load helpers/file_helper
 ZONEINFO=/usr/share/zoneinfo
 LOCALTIME=/etc/localtime
 LA_TZ=America/Los_Angeles
-LA_TZ_ABBREV=PDT
+LA_TZ_ABBREV=PST
+LA_TZ_DABBREV=PDT
 
 function setup() {
     if [[ ! -e /tmp/TZ_CHANGED ]]; then
@@ -27,5 +28,5 @@ function setup() {
 
 @test "date displays correct timezone" {
     run date +%Z
-    [[ ${output} == ${LA_TZ_ABBREV} ]]
+    [[ ${output} == ${LA_TZ_ABBREV} ]] || [[ ${output} == ${LA_TZ_DABBREV} ]]
 }
