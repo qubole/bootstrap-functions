@@ -94,6 +94,18 @@ function restart_worker_services() {
 }
 
 ##
+# Generic fucntion to restart hadoop services
+#
+function restart_hadoop_services() {
+    local is_master=$(nodeinfo is_master)
+    if [[ ${is_master} == "1" ]]; then
+        restart_master_services
+    else
+        restart_worker_services
+    fi
+}
+
+##
 # Use Java 8 for hadoop daemons and jobs
 #
 # By default, the hadoop daemons and jobs on Qubole
