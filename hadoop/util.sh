@@ -1,52 +1,104 @@
 #!/bin/bash
 
 source /usr/lib/hustler/bin/qubole-bash-lib.sh
+source /usr/lib/qubole/bootstrap-functions/common/utils.sh
 export PROFILE_FILE=${PROFILE_FILE:-/etc/profile}
 export HADOOP_ETC_DIR=${HADOOP_ETC_DIR:-/usr/lib/hadoop2/etc/hadoop}
+declare -A SVC_USERS=([namenode]=hdfs [timelineserver]=yarn [historyserver]=mapred [resourcemanager]=yarn [datanode]=hdfs)
 
-##
-# Restart hadoop services on the cluster master
-#
-# This may be used if you're using a different version
-# of Java, for example
-#
-function restart_master_services() {
-
-  monit unmonitor namenode
-  monit unmonitor timelineserver
-  monit unmonitor historyserver
-  monit unmonitor resourcemanager
-
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/yarn-daemon.sh stop timelineserver' yarn
-  /bin/su -s /bin/bash -c 'HADOOP_LIBEXEC_DIR=/usr/lib/hadoop2/libexec /usr/lib/hadoop2/sbin/mr-jobhistory-daemon.sh stop historyserver' mapred
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/yarn-daemon.sh stop resourcemanager' yarn
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop namenode' hdfs
-
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh start namenode' hdfs
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/yarn-daemon.sh start resourcemanager' yarn
-  /bin/su -s /bin/bash -c 'HADOOP_LIBEXEC_DIR=/usr/lib/hadoop2/libexec /usr/lib/hadoop2/sbin/mr-jobhistory-daemon.sh start historyserver' mapred
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/yarn-daemon.sh start timelineserver' yarn
-
-  monit monitor namenode
-  monit monitor resourcemanager
-  monit monitor historyserver
-  monit monitor timelineserver
+function _start_daemon() {
+  local daemon=$1;
+  case "${SVC_USERS[$daemon]}" in
+    yarn)
+      /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/yarn-daemon.sh start $daemon" yarn
+      ;;
+    hdfs)
+      /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/hadoop-daemon.sh start $daemon" hdfs
+      ;;
+    mapred)
+      /bin/su -s /bin/bash -c "HADOOP_LIBEXEC_DIR=/usr/lib/hadoop2/libexec /usr/lib/hadoop2/sbin/mr-jobhistory-daemon.sh start $daemon" mapred
+      ;;
+    *)
+      echo "Invalid daemon $daemon"
+      ;;
+  esac
 }
 
+function _stop_daemon() {
+  local daemon=$1;
+  case "${SVC_USERS[$daemon]}" in
+    yarn)
+      /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/yarn-daemon.sh stop $daemon" yarn
+      ;;
+    hdfs)
+      /bin/su -s /bin/bash -c "/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop $daemon" hdfs
+      ;;
+    mapred)
+      /bin/su -s /bin/bash -c "HADOOP_LIBEXEC_DIR=/usr/lib/hadoop2/libexec /usr/lib/hadoop2/sbin/mr-jobhistory-daemon.sh stop $daemon" mapred
+      ;;
+    *)
+      echo "Invalid daemon $daemon"
+      ;;
+  esac
+}
 
-##
+function _restart_services() {
+  local svcs=("$@")
+  local running_svcs=($(get_running_services "${svcs[@]}"))
+  for s in "${running_svcs[@]}"; do
+    monit unmonitor "$s"
+  done
+
+  for s in "${running_svcs[@]}"; do
+    _stop_daemon "$s"
+  done
+
+  local last=${#running_svcs[@]}
+
+  # Restart services in reverse order of how
+  # they were stopped
+  for (( i=last-1; i>=0; i-- )); do
+    _start_daemon "${running_svcs[i]}"
+  done
+
+  # Order doesn't matter for (un)monitor
+  for s in "${running_svcs[@]}"; do
+    monit monitor "$s"
+  done
+}
+
+#
+# Restart hadoop services on the cluster master
+#
+function _restart_master_services() {
+  _restart_services timelineserver historyserver resourcemanager namenode
+}
+
+#
 # Restart hadoop services on cluster workers
 #
 # This only restarts the datanode service since the
 # nodemanager is started after the bootstrap is run
 #
-function restart_worker_services() {
-  monit unmonitor datanode
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop datanode' hdfs
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh start datanode' hdfs
-  monit monitor datanode
+function _restart_worker_services() {
+  _restart_services datanode
   # No need to restart nodemanager since it starts only
   # after thhe bootstrap is finished
+}
+
+##
+# Restart hadoop services
+#
+# This may be used if you're using a different version
+# of Java, for example
+#
+function restart_hadoop_services() {
+  local is_master=$(nodeinfo is_master)
+  if [[ "$is_master" == "1" ]]; then
+    _restart_master_services
+  else
+    _restart_worker_services
+  fi
 }
 
 ##
@@ -65,13 +117,7 @@ function use_java8() {
  echo "export PATH=$JAVA_HOME/bin:$PATH" >> "$PROFILE_FILE"
  
  sed -i 's/java-1.7.0/java-1.8.0/' "$HADOOP_ETC_DIR/hadoop-env.sh"
-
- is_master=$(nodeinfo is_master)
- if [[ "$is_master" == "1" ]]; then
-   restart_master_services
- else
-   restart_worker_services
- fi
+ restart_hadoop_services
 }
 
 ##
