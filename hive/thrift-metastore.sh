@@ -1,15 +1,19 @@
 #!/bin/bash
 
-source /usr/lib/hustler/bin/qubole-bash-lib.sh
+source /usr/lib/qubole/bootstrap-functions/common/utils.sh
 
-is_master=$(nodeinfo is_master)
+if [[ $(nodeinfo_feature hive.use_thrift_metastore1_2) == "true" ]]; then
+    metastore_service=metastore1_2
+else
+    metastore_service=metastore
+fi
 
 ##
 # Start thrift metastore server
 #
 function start_thrift_metastore() {
-    if [[ "$is_master" == "1" ]]; then
-        monit start metastore1_2
+    if is_master_node; then
+        monit start ${metastore_service}
     else
         return 1
     fi
@@ -19,8 +23,8 @@ function start_thrift_metastore() {
 # Stop thrift metastore server
 #
 function stop_thrift_metastore() {
-    if [[ "$is_master" == "1" ]]; then
-        monit stop metastore1_2
+    if is_master_node; then
+        monit stop ${metastore_service}
     else
         return 1
     fi
