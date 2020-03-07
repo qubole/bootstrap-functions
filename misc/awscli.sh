@@ -1,13 +1,21 @@
 #!/bin/bash
-
-##
-# Configure AWS CLI
-# -p: Name of the profile. Defaults to `default`
-# -r: AWS region. Defaults to `us-east-1`
-# -c: Credentials file
-# The credentials file must contain the AWS Access Key and
-# the AWS Secret Key separated by a space, comma, tab or newline
 #
+# @file misc/awscli.sh
+# @brief Provides function to configure AWS CLI
+
+# @description Configure AWS CLI
+# A credentials file containing the AWS Access Key and the AWS Secret Key
+# separated by a space, comma, tab or newline must be provided
+#
+# @example
+#   configure_awscli -p exampleprofile -r us-east-1 -c /path/to/credentials/file
+#
+# @arg -p string Name of the profile. Defaults to `default`
+# @arg -r string AWS region. Defaults to `us-east-1`
+# @arg -c string Path to credentials file
+#
+# @exitcode 0 AWS CLI is configured
+# @exitcode 1 AWS CLI or credentials file not found
 function configure_awscli() {
     PROFILE=default
     REGION=us-east-1

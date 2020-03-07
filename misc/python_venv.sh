@@ -1,9 +1,9 @@
 #!/bin/bash -x
+#
+# @file misc/python_venv.sh
+# @brief Provides function to install Python virtualenv
 
-##
-# Install and activate a Python virtualenv
-# param1 - version of python to use, default 3.6
-# param2 - location to create virtualenv in, default /usr/lib/virtualenv/py36
+# @description Install and activate a Python virtualenv
 #
 # This function activates the new virtualenv, so install
 # any libraries you want after calling this with "pip install"
@@ -14,6 +14,11 @@
 #    /usr/lib/hadoop2/bin/hadoop dfs -get {s3|wasb}://path/to/requirements/file /tmp/requirements.txt
 #    pip install -r /tmp/requirements.txt
 #
+# @example
+#   install_python_env 3.6 /path/to/virtualenv/py36
+#
+# @arg $1 float Version of Python to use. Defaults to 3.6
+# @arg $2 string Location to create virtualenv in. Defaults to /usr/lib/virtualenv/py36
 function install_python_venv() {
   version=${$1:-36}
   location=${$2:-/usr/lib/virtualenv/py36}
