@@ -4,14 +4,16 @@ source /usr/lib/hustler/bin/qubole-bash-lib.sh
 export PROFILE_FILE=${PROFILE_FILE:-/etc/profile}
 export HADOOP_ETC_DIR=${HADOOP_ETC_DIR:-/usr/lib/hadoop2/etc/hadoop}
 
-##
-# Restart hadoop services on the cluster master
-#
-# This may be used if you're using a different version
-# of Java, for example
-#
-function restart_master_services() {
+al2=$([[ $(nodeinfo image_generation) -ge "2" ]] && echo "true" || echo "false")
+dont_use_monit=$(nodeinfo_feature hadoop2.dont_use_monit)
 
+if [[ -x "$(command -v initctl)" ]]; then
+    ctl=initctl
+else
+    ctl=systemctl
+fi
+
+function _restart_master_services_monit() {
   monit unmonitor namenode
   monit unmonitor timelineserver
   monit unmonitor historyserver
@@ -33,6 +35,49 @@ function restart_master_services() {
   monit monitor timelineserver
 }
 
+function _restart_master_services_ctl() {
+    $ctl stop timelineserver
+    $ctl stop historyserver
+    $ctl stop resourcemanager
+    $ctl stop namenode
+
+    $ctl start namenode
+    $ctl start resourcemanager
+    $ctl start historyserver
+    $ctl start timelineserver
+}
+
+function _restart_worker_services_monit() {
+  monit unmonitor datanode
+  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop datanode' hdfs
+  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh start datanode' hdfs
+  monit monitor datanode
+  # No need to restart nodemanager since it starts only
+  # after the bootstrap is finished
+}
+
+function _restart_worker_services_ctl() {
+    $ctl stop datanode
+
+    $ctl start datanode
+  # No need to restart nodemanager since it starts only
+  # after the bootstrap is finished
+}
+
+##
+# Restart hadoop services on the cluster master
+#
+# This may be used if you're using a different version
+# of Java, for example
+#
+function restart_master_services() {
+    if [[ ${al2} == "true" || ${dont_use_monit} == "true" ]]; then
+        _restart_master_services_ctl
+    else
+        _restart_master_services_monit
+    fi
+}
+
 
 ##
 # Restart hadoop services on cluster workers
@@ -41,12 +86,23 @@ function restart_master_services() {
 # nodemanager is started after the bootstrap is run
 #
 function restart_worker_services() {
-  monit unmonitor datanode
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh stop datanode' hdfs
-  /bin/su -s /bin/bash -c '/usr/lib/hadoop2/sbin/hadoop-daemon.sh start datanode' hdfs
-  monit monitor datanode
-  # No need to restart nodemanager since it starts only
-  # after thhe bootstrap is finished
+    if [[ ${al2} == "true" || ${dont_use_monit} == "true" ]]; then
+        _restart_worker_services_ctl
+    else
+        _restart_worker_services_monit
+    fi
+}
+
+##
+# Generic fucntion to restart hadoop services
+#
+function restart_hadoop_services() {
+    local is_master=$(nodeinfo is_master)
+    if [[ ${is_master} == "1" ]]; then
+        restart_master_services
+    else
+        restart_worker_services
+    fi
 }
 
 ##

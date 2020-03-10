@@ -89,3 +89,5 @@ is_master_node() {
 is_worker_node() {
    ! is_master_node
 }
+
+populate_nodeinfo
