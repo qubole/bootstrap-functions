@@ -68,6 +68,7 @@ function _restart_worker_services_ctl() {
 }
 
 # @description Function to restart hadoop services on the cluster master
+#
 # This may be used if you're using a different version
 # of Java, for example
 #
@@ -85,6 +86,7 @@ function restart_master_services() {
 
 
 # @description Function to restart hadoop services on the cluster workers
+#
 # This only restarts the datanode service since the
 # nodemanager is started after the bootstrap is run
 #
@@ -116,6 +118,7 @@ function restart_hadoop_services() {
 }
 
 # @description Use Java 8 for hadoop daemons and jobs
+#
 # By default, the hadoop daemons and jobs on Qubole
 # clusters run on Java 7. Use this function if you would like
 # to use Java 8. This is only required if your cluster:

@@ -7,6 +7,7 @@ source /usr/lib/hustler/bin/qubole-bash-lib.sh
 source /usr/lib/qubole/bootstrap-functions/hive/hiveserver2.sh
 
 # @description Installs Hive Glue Catalog Sync Agent
+#
 # Requires Hive 2.x
 # Currently supported only on AWS
 #

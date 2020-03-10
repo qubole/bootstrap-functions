@@ -4,6 +4,7 @@
 # @brief Provides common utility functions
 
 # @description Function to populate nodeinfo
+#
 # Please call this method at start of node bootstrap
 #
 # @example

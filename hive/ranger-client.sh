@@ -7,6 +7,7 @@ source /usr/lib/qubole/bootstrap-functions/common/utils.sh
 source /usr/lib/qubole/bootstrap-functions/hive/hiveserver2.sh
 
 # @description Install Apache Ranger client for Hive
+#
 # Currently supported only on AWS
 # Requires HiveServer2
 #

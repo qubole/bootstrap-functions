@@ -21,6 +21,7 @@ function is_hs2_configured() {
 }
 
 # @description Function to stop HiveServer2 JVM
+#
 # Works on both Hadoop2 and HiveServer2 clusters
 #
 # @example
@@ -34,6 +35,7 @@ function stop_hs2() {
 }
 
 # @description Function to start HiveServer2 JVM
+#
 # Works on both Hadoop2 and HiveServer2 clusters
 #
 # @example
@@ -47,6 +49,7 @@ function start_hs2() {
 }
 
 # @description Function to restart HiveServer2 JVM
+#
 # Works on both Hadoop2 and HiveServer2 clusters
 #
 # @example

@@ -4,6 +4,7 @@
 # @brief Provides function to configure AWS CLI
 
 # @description Configure AWS CLI
+#
 # A credentials file containing the AWS Access Key and the AWS Secret Key
 # separated by a space, comma, tab or newline must be provided
 #
