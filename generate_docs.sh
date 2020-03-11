@@ -11,8 +11,9 @@ for dx in ${directories}; do
 done
 
 # Overwrite README.md
+cp -f README.md README.bak
 cp -f README.template README.md
 for dx in ${directories}; do
     d=$(dirname ${dx}.)
-    sed -i "/The following set of functions are available at present:/a * [${d}] (docs/${d}.md)" README.md
+    sed -i "/The following set of functions are available at present:/a * [${d}](docs/${d}.md)" README.md
 done
