@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd "$(dirname "$0")"
 
 # Cleanup older documentation
 mkdir -p docs
