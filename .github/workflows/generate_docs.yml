@@ -29,7 +29,7 @@ jobs:
     
     - name: Add shdoc to PATH
       run: |
-        echo "::add-path::$WORKSPACE_PATH/shdoc"
+        echo "::add-path::$GITHUB_WORKSPACE/shdoc"
         echo "$PATH"
 
     - name: Generate documentation
