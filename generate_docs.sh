@@ -6,7 +6,7 @@ mkdir -p docs
 rm -f docs/*.md
 
 # Generate new documentation
-directories=$(ls -d */ | grep -v "docs\|tests\|examples")
+directories=$(ls -d */ | grep -v "docs\|tests\|examples\|shdoc")
 for dx in ${directories}; do
     find ${dx} -type f -name "*.sh" -exec shdoc {} \; > docs/$(dirname ${dx}.).md
 done
