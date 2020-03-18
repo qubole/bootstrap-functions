@@ -1,11 +1,11 @@
 #!/bin/bash
+#
+# @file misc/mount_nfs.sh
+# @brief Provides function to mount a NFS volume
 
 source /usr/lib/hustler/bin/qubole-bash-lib.sh
 
-## 
-# Mounts an NFS volume on master and worker nodes
-# param1 - path to NFS share
-# param2 - mountpoint to use
+# @description Mounts an NFS volume on master and worker nodes
 #
 # Instructions for AWS EFS mount:
 # 1. After creating the EFS file system, create a security group
@@ -17,7 +17,12 @@ source /usr/lib/hustler/bin/qubole-bash-lib.sh
 # http://docs.qubole.com/en/latest/admin-guide/how-to-topics/persistent-security-group.html
 #
 # TODO: add instructions for Azure file share
-# 
+#
+# @example
+#   mount_nfs_volume "example.nfs.share:/" /mnt/efs
+#
+# @arg $1 string Path to NFS share
+# @arg $2 string Mount point to use
 function mount_nfs_volume() {
   nfs_export=$1
   mountpoint=$2

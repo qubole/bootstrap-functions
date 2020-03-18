@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# @file hive/thrift-metastore.sh
+# @brief Provides functions to start/stop/restart thrift metastore server
 
 source /usr/lib/qubole/bootstrap-functions/common/utils.sh
 
@@ -8,9 +11,12 @@ else
     metastore_service=metastore
 fi
 
-##
-# Start thrift metastore server
+# @description Function to start thrift metastore server
 #
+# @example
+#   start_thrift_metastore
+#
+# @noargs
 function start_thrift_metastore() {
     if is_master_node; then
         monit start ${metastore_service}
@@ -19,9 +25,12 @@ function start_thrift_metastore() {
     fi
 }
 
-##
-# Stop thrift metastore server
+# @description Function to stop thrift metastore server
 #
+# @example
+#   stop_thrift_metastore
+#
+# @noargs
 function stop_thrift_metastore() {
     if is_master_node; then
         monit stop ${metastore_service}
@@ -30,9 +39,12 @@ function stop_thrift_metastore() {
     fi
 }
 
-##
-# Restart thrift metastore server
+# @description Function to restart thrift metastore server
 #
+# @example
+#   restart_thrift_metastore
+#
+# @noargs
 function restart_thrift_metastore() {
    stop_thrift_metastore && sleep 2 && start_thrift_metastore
 }

@@ -1,13 +1,20 @@
 #!/bin/bash
+#
+# @file hive/glue-sync.sh
+# @brief Provides function to install Hive Glue Catalog Sync Agent
 
 source /usr/lib/hustler/bin/qubole-bash-lib.sh
 source /usr/lib/qubole/bootstrap-functions/hive/hiveserver2.sh
 
-##
-# Installs Hive Glue Catalog Sync Agent
-# param1 - Region for AWS Athena. Defaults to us-east-1
-# Requires Hive 2.x
+# @description Installs Hive Glue Catalog Sync Agent
 #
+# Requires Hive 2.x
+# Currently supported only on AWS
+#
+# @example
+#   install_glue_sync us-east-1
+#
+# @arg $1 string Region for AWS Athena. Defaults to `us-east-1`
 function install_glue_sync() {
     aws_region=${1:-us-east-1}
 

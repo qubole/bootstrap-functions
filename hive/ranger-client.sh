@@ -1,15 +1,22 @@
 #!/bin/bash
+#
+# @file hive/ranger-client.sh
+# @brief Provides function to install Apache Ranger client for Hive
 
 source /usr/lib/qubole/bootstrap-functions/common/utils.sh
 source /usr/lib/qubole/bootstrap-functions/hive/hiveserver2.sh
 
-##
-# Install Apache Ranger client for Hive
-# Parameters:
-# -h: Ranger admin host. Defaults to `localhost`
-# -p: Ranger admin port. Defaults to `6080`
-# -r: Ranger repository name. Defaults to `hivedev`
+# @description Install Apache Ranger client for Hive
 #
+# Currently supported only on AWS
+# Requires HiveServer2
+#
+# @example
+#   install_ranger -h example.host -p 6080 -r examplerepo
+#
+# @arg -h string Hostname of Ranger admin. Defaults to `localhost`
+# @arg -p int Port where Ranger admin is running. Defaults to `6080`
+# @arg -r string Name of Ranger repository. Defaults to `hivedev`
 function install_ranger() {
     populate_nodeinfo
     if [[ is_hs2_configured ]]; then
