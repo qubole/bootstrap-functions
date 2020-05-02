@@ -23,7 +23,12 @@
 #
 #
 function configure_prometheus_ram_on_master() {
-  sed -i "s/PROMETHEUS_RAM/$1/g" /usr/lib/prometheus/config/docker-compose.yml
+  prometheus_ram=$1
+  regex_number='^[0-9]+$'
+  prometheus_ram_with_suffix="${prometheus_ram}M"
+  if [[ -n $prometheus_ram ]] && [[ $prometheus_ram =~ $regex_number ]]; then
+    sed -i "s/PROMETHEUS_RAM/$prometheus_ram_with_suffix/g" /usr/lib/prometheus/config/docker-compose.yml
+  fi
 }
 
 
