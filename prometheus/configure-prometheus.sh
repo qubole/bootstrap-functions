@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# @file prometheus/configure-prometheus-ram.sh
+# @file prometheus/configure-prometheus.sh
 # @brief Provides functions to configure Prometheus
 #
 #
