@@ -14,6 +14,7 @@ mount_nfs fs-7abd2444.efs.us-east-1.amazonaws.com:/ /mnt/efs
 ## Available functions
 The following set of functions are available at present:
 * [spark](docs/spark.md)
+* [prometheus](docs/prometheus.md)
 * [misc](docs/misc.md)
 * [hive](docs/hive.md)
 * [hadoop](docs/hadoop.md)
