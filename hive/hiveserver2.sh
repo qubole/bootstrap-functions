@@ -62,3 +62,42 @@ function restart_hs2() {
   start_hs2
 }
 
+# @file hive/hiveserver2.sh
+# @brief Provides function to start sending hs2 metrics to port 12155 for release<60.
+#
+# @description Function to start sending hs2 metrics to the port 12155.
+#
+#  This function will replace the /usr/lib/hive1.2/bin/hive file to allow
+#  bind jmx exporter to the port 12155 and start receiving the hs2 metrics.
+#
+# Works on hs2 clusters
+
+# @example
+#    send_hs2_metrics
+#
+# @noargs
+function send_hs2_metrics() {
+
+  # if cluster is hs2 configured, then only jmx exporter will be bind.
+  if [[ is_hs2_configured ]]; then
+
+    # call populate_nodeinfo to collect information about the S3 bucket location.
+    populate_nodeinfo
+
+    # collect S3 default location in defloc.
+    defloc=$(nodeinfo s3_default_location)
+
+    # remove the already existing file.
+    rm /usr/lib/hive1.2/bin/hive
+
+    # Collect the file from S3 bucket at the given location and copy that to the specified location.
+    /usr/lib/hadoop2/bin/hadoop dfs -get s3://test-addy/hive /usr/lib/hive1.2/bin/hive
+
+    # Change file permissions.
+    chmod 755 /usr/lib/hive1.2/bin/hive
+
+    # restart hs2 to reflect the changes.
+    restart_hs2
+
+  fi
+}
