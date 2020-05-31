@@ -87,11 +87,8 @@ function send_hs2_metrics() {
     # collect S3 default location in defloc.
     defloc=$(nodeinfo s3_default_location)
 
-    # remove the already existing file.
-    rm /usr/lib/hive1.2/bin/hive
-
     # Collect the file from S3 bucket at the given location and copy that to the specified location.
-    /usr/lib/hadoop2/bin/hadoop dfs -get s3://test-addy/hive /usr/lib/hive1.2/bin/hive
+    /usr/lib/hadoop2/bin/hadoop dfs -get -f $defloc/hive /usr/lib/hive1.2/bin/hive
 
     # Change file permissions.
     chmod 755 /usr/lib/hive1.2/bin/hive
