@@ -19,11 +19,23 @@
 #
 # @arg $1 float Version of Python to use. Defaults to 3.6
 # @arg $2 string Location to create virtualenv in. Defaults to /usr/lib/virtualenv/py36
+#
+# @exitcode 0 Python virtualenv was created and activated
+# @exitcode 1 Python executable for virtualenv couldn't be found or installed
 function install_python_venv() {
-  version=${$1:-36}
-  location=${$2:-/usr/lib/virtualenv/py36}
+  version=${1:-36}
+  location=${2:-/usr/lib/virtualenv/py36}
 
-  yum install -y "python${version}"
+  if [[ ! -x /usr/bin/python${version} ]]; then
+      echo "No executable /usr/bin/python${version} found. Attempting to install.."
+      yum_python_package=${version//.}
+      yum install -y "python${yum_python_package}"
+      if [[ $? -ne 0 ]]; then
+          echo "Failed to install python${version}.."
+	  return 1
+      fi
+  fi
+
   mkdir -p $location
 
   virtualenv -p "/usr/bin/python${version}" $location
