@@ -62,6 +62,11 @@ install_python_env 3.6 /path/to/virtualenv/py36
 * **$1** (float): Version of Python to use. Defaults to 3.6
 * **$2** (string): Location to create virtualenv in. Defaults to /usr/lib/virtualenv/py36
 
+### Exit codes
+
+* **0**: Python virtualenv was created and activated
+* **1**: Python executable for virtualenv couldn't be found or installed
+
 # misc/awscli.sh
 
 Provides function to configure AWS CLI
