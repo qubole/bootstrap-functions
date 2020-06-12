@@ -31,7 +31,7 @@ function install_ranger() {
         SOLR_HOST=""
         SOLR_PORT=6083
         
-        while getopts ":h:p:r:s:P" opt; do
+        while getopts ":h:p:r:S:P" opt; do
             case ${opt} in
                 h)
                     HOST=${OPTARG}
@@ -107,6 +107,7 @@ function install_ranger() {
         cp -r /usr/lib/hive1.2/lib/ranger-hive-plugin-impl/* /usr/lib/hive1.2/lib/
 
         # Restart HS2
+        echo "Restarting HS2"
         restart_hs2
 
         popd
