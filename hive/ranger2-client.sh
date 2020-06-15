@@ -31,7 +31,7 @@ function install_ranger() {
         SOLR_HOST=""
         SOLR_PORT=6083
         
-        while getopts ":h:p:r:S:P" opt; do
+        while getopts ":h:p:r:S:P:" opt; do
             case ${opt} in
                 h)
                     HOST=${OPTARG}
@@ -61,11 +61,11 @@ function install_ranger() {
         
         URL=http://${HOST}:${PORT}
         HIVE_LIB=/usr/lib/hive1.2
-	    
-	    S3_PATH=s3://paid-qubole/ranger-2.0.0
-	    RANGER_PLUGIN=ranger-2.0.0-hive-plugin
-    	RANGER_PLUGIN_FILE=${S3_PATH}/${RANGER_PLUGIN}.tar.gz
-  		SPOOL_DIR=/media/ephemeral0/logs/ranger/hive/audit/solr
+        
+        S3_PATH=s3://paid-qubole/ranger-2.0.0
+        RANGER_PLUGIN=ranger-2.0.0-hive-plugin
+        RANGER_PLUGIN_FILE=${S3_PATH}/${RANGER_PLUGIN}.tar.gz
+        SPOOL_DIR=/media/ephemeral0/logs/ranger/hive/audit/solr
                 
         change_java_version "1.8" "1.8"
         mkdir -p /media/ephemeral0/hive_plugin
@@ -88,13 +88,13 @@ function install_ranger() {
         
         # Enable Solr Configure install.properties
         if [[ $SOLR_HOST -ne "" ]]; then
-        	SOLR_URL=http://${SOLR_HOST}:${SOLR_PORT}/solr/ranger_audits
+            SOLR_URL=http://${SOLR_HOST}:${SOLR_PORT}/solr/ranger_audits
         
-    		sed -i "s#\(XAAUDIT.SOLR.ENABLE=\).*#XAAUDIT.SOLR.ENABLE=true#g" install.properties
-    		sed -i "s#\(XAAUDIT.SOLR.URL=\).*#XAAUDIT.SOLR.URL=$SOLR_URL#g" install.properties
-    		sed -i "s#\(XAAUDIT.SOLR.IS_ENABLED=\).*#XAAUDIT.SOLR.IS_ENABLED=true#g" install.properties
-    		sed -i "s#\(XAAUDIT.SOLR.SOLR_URL=\).*#XAAUDIT.SOLR.SOLR_URL=$SOLR_URL#g" install.properties
-    		sed -i "s#\(XAAUDIT.SOLR.FILE_SPOOL_DIR=\).*#XAAUDIT.SOLR.FILE_SPOOL_DIR=${SPOOL_DIR}#g" install.properties    
+            sed -i "s#\(XAAUDIT.SOLR.ENABLE=\).*#XAAUDIT.SOLR.ENABLE=true#g" install.properties
+            sed -i "s#\(XAAUDIT.SOLR.URL=\).*#XAAUDIT.SOLR.URL=$SOLR_URL#g" install.properties
+            sed -i "s#\(XAAUDIT.SOLR.IS_ENABLED=\).*#XAAUDIT.SOLR.IS_ENABLED=true#g" install.properties
+            sed -i "s#\(XAAUDIT.SOLR.SOLR_URL=\).*#XAAUDIT.SOLR.SOLR_URL=$SOLR_URL#g" install.properties
+            sed -i "s#\(XAAUDIT.SOLR.FILE_SPOOL_DIR=\).*#XAAUDIT.SOLR.FILE_SPOOL_DIR=${SPOOL_DIR}#g" install.properties    
         fi
        
         # Run enable-hive-plugin.sh
