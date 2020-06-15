@@ -17,6 +17,7 @@ source /usr/lib/qubole/bootstrap-functions/hive/hiveserver2.sh
 # @arg -h string Hostname of Ranger admin. Defaults to `localhost`
 # @arg -p int Port where Ranger admin is running. Defaults to `6080`
 # @arg -r string Name of Ranger repository. Defaults to `hivedev`
+# @arg -v string Name of Ranger Plugin version. Defaults to `1.2.0`
 
 # @arg -S string Hostname of Solr admin. Defaults to `""`
 # @arg -P int Port where Solr admin is running. Defaults to `6083`
@@ -30,8 +31,9 @@ function install_ranger() {
         QBOL_HEALTH_CHECK_USER=qbol_user
         SOLR_HOST=""
         SOLR_PORT=6083
+        PLUGIN_VER=1.2.0
         
-        while getopts ":h:p:r:S:P:" opt; do
+        while getopts ":h:p:r:v:S:P:" opt; do
             case ${opt} in
                 h)
                     HOST=${OPTARG}
@@ -41,6 +43,9 @@ function install_ranger() {
                     ;;
                 r)
                     REPOSITORY_NAME=${OPTARG}
+                    ;;
+                v)
+                    PLUGIN_VER=${OPTARG}
                     ;;
                 S)
                     SOLR_HOST=${OPTARG}
@@ -63,7 +68,7 @@ function install_ranger() {
         HIVE_LIB=/usr/lib/hive1.2
         
         S3_PATH=s3://paid-qubole/ranger-2.0.0
-        RANGER_PLUGIN=ranger-2.0.0-hive-plugin
+        RANGER_PLUGIN=ranger-${PLUGIN_VER}-hive-plugin
         RANGER_PLUGIN_FILE=${S3_PATH}/${RANGER_PLUGIN}.tar.gz
         SPOOL_DIR=/media/ephemeral0/logs/ranger/hive/audit/solr
                 
