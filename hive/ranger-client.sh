@@ -71,7 +71,6 @@ function install_ranger() {
         S3_PATH=s3://paid-qubole/ranger-${PLUGIN_VER}
         RANGER_PLUGIN=ranger-${PLUGIN_VER}-hive-plugin
         RANGER_PLUGIN_FILE=${S3_PATH}/${RANGER_PLUGIN}.tar.gz
-        SPOOL_DIR=/media/ephemeral0/logs/ranger/hive/audit/solr
 
         change_java_version "1.8" "1.8"
         mkdir -p /media/ephemeral0/hive_plugin
@@ -95,6 +94,7 @@ function install_ranger() {
 
         # Enable Solr Configure install.properties
         if [[ $SOLR_HOST -ne "" ]]; then
+            SPOOL_DIR=/media/ephemeral0/logs/ranger/hive/audit/solr
             SOLR_URL=http://${SOLR_HOST}:${SOLR_PORT}/solr/ranger_audits
 
             sed -i "s#\(XAAUDIT.SOLR.ENABLE=\).*#XAAUDIT.SOLR.ENABLE=true#g" install.properties
