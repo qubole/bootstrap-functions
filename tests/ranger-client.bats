@@ -1,28 +1,30 @@
 load helpers/file_helper
+source /usr/lib/qubole/bootstrap-functions/hive/ranger-client.sh
+source /usr/lib/qubole/bootstrap-functions/common/utils.sh
 
 RANGER_HOST=localhost
 RANGER_PORT=6080
 RANGER_REPO=hivedev
 RANGER_URL=http://${RANGER_HOST}:${RANGER_PORT}
 HIVE_LIB=/usr/lib/hive1.2
-PLUGIN_VER=1.1.0
-RANGER_HIVE_PLUGIN_PATH=/media/ephemeral0/hive_plugin/ranger-${PLUGIN_VER}-hive-plugin
+HIVE_VERSION=$(nodeinfo hive_version)
+
+function set_plugin_version() {
+    if [[ "${HIVE_VERSION}" == "2.3" ]]; then
+        PLUGIN_VERSION="1.2.0"
+    elif [[ "${HIVE_VERSION}" == "3.1.1" ]]; then
+        PLUGIN_VERSION="2.0.0"
+    else
+        PLUGIN_VERSION="1.1.0"
+    fi
+    RANGER_HIVE_PLUGIN_PATH=/media/ephemeral0/hive_plugin/ranger-${PLUGIN_VERSION}-hive-plugin
+}
 
 function setup() {
+    set_plugin_version
     if [[ ! -e /tmp/RANGER_INSTALLED ]]; then
-        source /usr/lib/qubole/bootstrap-functions/hive/ranger-client.sh
         install_ranger -h ${RANGER_HOST} -p ${RANGER_PORT} -r ${RANGER_REPO}
         touch /tmp/RANGER_INSTALLED
-    fi
-    source /usr/lib/qubole/bootstrap-functions/common/utils.sh
-    HIVE_VERSION=$(nodeinfo hive_version)
-    if [ "${HIVE_VERSION}" = "2.3" ]; then
-            PLUGIN_VER="1.2.0"
-            RANGER_HIVE_PLUGIN_PATH=/media/ephemeral0/hive_plugin/ranger-${PLUGIN_VER}-hive-plugin
-    fi
-    if [ "${HIVE_VERSION}" = "3.1.1" ]; then
-            PLUGIN_VER="2.0.0"
-            RANGER_HIVE_PLUGIN_PATH=/media/ephemeral0/hive_plugin/ranger-${PLUGIN_VER}-hive-plugin
     fi
 }
 
@@ -49,9 +51,9 @@ function setup() {
 @test "verify ranger jars were copied to hive lib" {
     location=${HIVE_LIB}/lib
     if [[ ${HIVE_VERSION} == 3* ]]; then
-        ranger_jars=( eclipselink-2.5.2.jar gethostname4j-0.0.2.jar httpclient-4.5.3.jar httpcore-4.4.6.jar httpmime-4.5.3.jar jna-5.2.0.jar jna-platform-5.2.0.jar noggit-0.8.jar ranger-hive-plugin-${PLUGIN_VER}.jar ranger-hive-plugin-impl ranger-hive-plugin-shim-${PLUGIN_VER}.jar ranger-plugin-classloader-${PLUGIN_VER}.jar ranger-plugins-audit-${PLUGIN_VER}.jar ranger-plugins-common-${PLUGIN_VER}.jar ranger-plugins-cred-${PLUGIN_VER}.jar solr-solrj-7.7.1.jar )
+        ranger_jars=( eclipselink-2.5.2.jar gethostname4j-0.0.2.jar httpclient-4.5.3.jar httpcore-4.4.6.jar httpmime-4.5.3.jar jna-5.2.0.jar jna-platform-5.2.0.jar noggit-0.8.jar ranger-hive-plugin-${PLUGIN_VERSION}.jar ranger-hive-plugin-impl ranger-hive-plugin-shim-${PLUGIN_VERSION}.jar ranger-plugin-classloader-${PLUGIN_VERSION}.jar ranger-plugins-audit-${PLUGIN_VERSION}.jar ranger-plugins-common-${PLUGIN_VERSION}.jar ranger-plugins-cred-${PLUGIN_VERSION}.jar solr-solrj-7.7.1.jar )
     else
-        ranger_jars=( eclipselink-2.5.2.jar httpclient-4.5.3.jar httpcore-4.4.6.jar httpmime-4.5.3.jar javax.persistence-2.1.0.jar noggit-0.6.jar ranger-hive-plugin-${PLUGIN_VER}.jar ranger-hive-plugin-impl ranger-hive-plugin-shim-${PLUGIN_VER}.jar ranger-plugin-classloader-${PLUGIN_VER}.jar ranger-plugins-audit-${PLUGIN_VER}.jar ranger-plugins-common-${PLUGIN_VER}.jar ranger-plugins-cred-${PLUGIN_VER}.jar solr-solrj-5.5.4.jar )
+        ranger_jars=( eclipselink-2.5.2.jar httpclient-4.5.3.jar httpcore-4.4.6.jar httpmime-4.5.3.jar javax.persistence-2.1.0.jar noggit-0.6.jar ranger-hive-plugin-${PLUGIN_VERSION}.jar ranger-hive-plugin-impl ranger-hive-plugin-shim-${PLUGIN_VERSION}.jar ranger-plugin-classloader-${PLUGIN_VERSION}.jar ranger-plugins-audit-${PLUGIN_VERSION}.jar ranger-plugins-common-${PLUGIN_VERSION}.jar ranger-plugins-cred-${PLUGIN_VERSION}.jar solr-solrj-5.5.4.jar )
     fi
     assert_multiple_files_exist $location "${ranger_jars[@]}"
 
