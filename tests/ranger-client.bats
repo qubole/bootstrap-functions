@@ -10,12 +10,12 @@ HIVE_LIB=/usr/lib/hive1.2
 HIVE_VERSION=$(nodeinfo hive_version)
 
 function set_plugin_version() {
-    if [[ "${HIVE_VERSION}" == "2.3" ]]; then
-        PLUGIN_VERSION="1.2.0"
-    elif [[ "${HIVE_VERSION}" == "3.1.1" ]]; then
-        PLUGIN_VERSION="2.0.0"
-    else
+    if [[ "${HIVE_VERSION}" == "1.2" || "${HIVE_VERSION}" == "2.1.1" ]]; then
         PLUGIN_VERSION="1.1.0"
+    elif [[ "${HIVE_VERSION}" == "2.3" ]]; then
+        PLUGIN_VERSION="1.2.0"
+    else
+        PLUGIN_VERSION="2.0.0"
     fi
     RANGER_HIVE_PLUGIN_PATH=/media/ephemeral0/hive_plugin/ranger-${PLUGIN_VERSION}-hive-plugin
 }
@@ -50,7 +50,7 @@ function setup() {
 
 @test "verify ranger jars were copied to hive lib" {
     location=${HIVE_LIB}/lib
-    if [[ ${HIVE_VERSION} == 3* ]]; then
+    if [[ ${HIVE_VERSION} != "1.2" && ${HIVE_VERSION} != 2* ]]; then
         ranger_jars=( eclipselink-2.5.2.jar gethostname4j-0.0.2.jar httpclient-4.5.3.jar httpcore-4.4.6.jar httpmime-4.5.3.jar jna-5.2.0.jar jna-platform-5.2.0.jar noggit-0.8.jar ranger-hive-plugin-${PLUGIN_VERSION}.jar ranger-hive-plugin-impl ranger-hive-plugin-shim-${PLUGIN_VERSION}.jar ranger-plugin-classloader-${PLUGIN_VERSION}.jar ranger-plugins-audit-${PLUGIN_VERSION}.jar ranger-plugins-common-${PLUGIN_VERSION}.jar ranger-plugins-cred-${PLUGIN_VERSION}.jar solr-solrj-7.7.1.jar )
     else
         ranger_jars=( eclipselink-2.5.2.jar httpclient-4.5.3.jar httpcore-4.4.6.jar httpmime-4.5.3.jar javax.persistence-2.1.0.jar noggit-0.6.jar ranger-hive-plugin-${PLUGIN_VERSION}.jar ranger-hive-plugin-impl ranger-hive-plugin-shim-${PLUGIN_VERSION}.jar ranger-plugin-classloader-${PLUGIN_VERSION}.jar ranger-plugins-audit-${PLUGIN_VERSION}.jar ranger-plugins-common-${PLUGIN_VERSION}.jar ranger-plugins-cred-${PLUGIN_VERSION}.jar solr-solrj-5.5.4.jar )
