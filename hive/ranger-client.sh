@@ -93,7 +93,7 @@ function install_ranger() {
         sed -i "s#POLICY_CACHE_FILE_PATH=/etc#POLICY_CACHE_FILE_PATH=/media/ephemeral0/hive_plugin/data#g" enable-hive-plugin.sh
 
         # Enable Solr Configure install.properties
-        if [[ "$SOLR_HOST" != "" ]]; then
+        if [[ $SOLR_HOST -ne "" ]]; then
             SPOOL_DIR=/media/ephemeral0/logs/ranger/hive/audit/solr
             SOLR_URL=http://${SOLR_HOST}:${SOLR_PORT}/solr/ranger_audits
 
