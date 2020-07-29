@@ -52,6 +52,45 @@ add_to_authorized_keys "ssh-rsa xyzxyzxyzxyz...xyzxyz user@example.com" ec2-user
 * **$1** (string): Public key to add to authorized_keys file
 * **$2** (string): User for which the public key is added. Defaults to `ec2-user`
 
+# misc/awscli.sh
+
+Provides function to configure AWS CLI
+
+## Overview
+
+Configure AWS CLI
+
+A credentials file containing the AWS Access Key and the AWS Secret Key
+separated by a space, comma, tab or newline must be provided
+
+## Index
+
+* [configure_awscli()](#configureawscli)
+
+### configure_awscli()
+
+Configure AWS CLI
+
+A credentials file containing the AWS Access Key and the AWS Secret Key
+separated by a space, comma, tab or newline must be provided
+
+#### Example
+
+```bash
+configure_awscli -p exampleprofile -r us-east-1 -c /path/to/credentials/file
+```
+
+#### Arguments
+
+* -p string Name of the profile. Defaults to `default`
+* -r string AWS region. Defaults to `us-east-1`
+* -c string Path to credentials file
+
+#### Exit codes
+
+* **0**: AWS CLI is configured
+* **1**: AWS CLI or credentials file not found
+
 # misc/python_venv.sh
 
 Provides function to install Python virtualenv
@@ -150,43 +189,4 @@ mount_nfs_volume "example.nfs.share:/" /mnt/efs
 
 * **$1** (string): Path to NFS share
 * **$2** (string): Mount point to use
-
-# misc/awscli.sh
-
-Provides function to configure AWS CLI
-
-## Overview
-
-Configure AWS CLI
-
-A credentials file containing the AWS Access Key and the AWS Secret Key
-separated by a space, comma, tab or newline must be provided
-
-## Index
-
-* [configure_awscli()](#configureawscli)
-
-### configure_awscli()
-
-Configure AWS CLI
-
-A credentials file containing the AWS Access Key and the AWS Secret Key
-separated by a space, comma, tab or newline must be provided
-
-#### Example
-
-```bash
-configure_awscli -p exampleprofile -r us-east-1 -c /path/to/credentials/file
-```
-
-#### Arguments
-
-* -p string Name of the profile. Defaults to `default`
-* -r string AWS region. Defaults to `us-east-1`
-* -c string Path to credentials file
-
-#### Exit codes
-
-* **0**: AWS CLI is configured
-* **1**: AWS CLI or credentials file not found
 
